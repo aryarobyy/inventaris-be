@@ -1,0 +1,172 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model Admin {
+  id         Int      @id @default(autoincrement())
+  username   String   @unique
+  name       String
+  password   String
+  status     Boolean  @default(false) 
+  created_at DateTime @default(now())
+  updated_at DateTime @default(now())
+  
+  role       Role @default(pending)
+}
+
+model User {
+  id            Int             @id @default(autoincrement())
+  name          String          @unique
+  student_id    String         @unique
+  major_name    String
+  academic_year String
+  phone_number  String
+  organization  String
+  created_at    DateTime        @default(now())
+  updated_at    DateTime        @default(now())
+  
+  loans         Loan[]
+  roomBookings  RoomBooking[]
+}
+
+model Item {
+  id                 Int              @id @default(autoincrement())
+  name               String
+  description        String?
+  quantity           Int              @default(1)
+  brand              String?
+  pair_id            Int?
+  status_notes       String?
+  created_at         DateTime         @default(now())
+  updated_at         DateTime         @default(now())
+  
+  loan_items          LoanItem[]
+  category            ItemCategory
+  condition_status    ItemCondition
+  availability_status ItemAvailability
+}
+
+model Loan {
+  id          Int         @id @default(autoincrement())
+  borrower    User        @relation(fields: [borrower_id], references: [id], onDelete: Restrict)
+  borrower_id Int
+  loan_date   DateTime
+  due_date    DateTime
+  return_date DateTime?
+  notes       String?
+  created_at  DateTime    @default(now())
+  updated_at  DateTime    @default(now())
+  
+  loan_status LoanStatus
+  loanItems   LoanItem[]
+}
+
+model LoanItem {
+  id               Int         @id @default(autoincrement())
+  loan_id          Int
+  item_id          Int
+  borrowed_quantity Int       @default(1)
+  returned_at       DateTime?
+
+  loan              Loan        @relation(fields: [loan_id], references: [id], onDelete: Cascade)
+  item              Item        @relation(fields: [item_id], references: [id], onDelete: Restrict)
+  borrow_condition  ItemCondition?
+  return_condition  ItemCondition?
+
+  @@unique([loan_id, item_id])
+}
+
+model Room {
+  id          Int           @id @default(autoincrement())
+  room_name   String
+  pc_count    Int           @default(0)
+  description String?
+  capacity    Int?
+  location    String?
+  created_at  DateTime      @default(now())
+  updated_at  DateTime      @default(now())
+  
+  room_status RoomStatus
+  bookings    RoomBooking[]
+}
+
+model RoomBooking {
+  id                 Int         @id @default(autoincrement())
+  borrower_id        Int
+  room_id            Int
+  booking_date       DateTime
+  start_time         DateTime
+  end_time           DateTime
+  actual_return_time DateTime?
+  purpose            String?
+  notes              String?
+  created_at         DateTime     @default(now())
+  updated_at         DateTime     @default(now())
+  
+  booking_status     BookingStatus
+  room               Room        @relation(fields: [room_id], references: [id], onDelete: Restrict)
+  borrower           User        @relation(fields: [borrower_id], references: [id], onDelete: Restrict)
+}
+
+// ENUMS
+enum Role {
+  pending
+  admin
+  super_admin
+}
+
+enum ItemCategory {
+  computer
+  web_cam
+  printer
+  projector
+  cable
+  mouse
+  keyboard
+  headset
+  monitor
+  laptop
+}
+
+enum ItemCondition {
+  good
+  damaged
+  repair
+  lost
+}
+
+enum ItemAvailability {
+  available
+  borrowed
+  maintenance
+  retired
+}
+
+enum LoanStatus {
+  pending
+  approved
+  active
+  returned
+  overdue
+  cancelled
+}
+
+enum RoomStatus {
+  available
+  occupied
+  maintenance
+  out_of_service
+}
+
+enum BookingStatus {
+  pending
+  approved
+  active
+  completed
+  cancelled
+}
