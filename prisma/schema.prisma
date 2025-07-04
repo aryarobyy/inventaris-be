@@ -31,7 +31,7 @@ model User {
   updated_at    DateTime        @default(now())
   
   loans         Loan[]
-  roomBookings  RoomBooking[]
+  room_bookings  RoomBooking[]
 }
 
 model Item {
@@ -40,6 +40,7 @@ model Item {
   description        String?
   quantity           Int              @default(1)
   brand              String?
+  imgUrl             String?
   pair_id            Int?
   status_notes       String?
   created_at         DateTime         @default(now())
@@ -63,7 +64,7 @@ model Loan {
   updated_at  DateTime    @default(now())
   
   loan_status LoanStatus
-  loanItems   LoanItem[]
+  loan_items   LoanItem[]
 }
 
 model LoanItem {
