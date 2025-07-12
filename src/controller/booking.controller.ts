@@ -8,7 +8,7 @@ export const getBookings = async (
   next: NextFunction,
 ): Promise<void> => {
   try {
-    const data = await prisma.roomBooking.findMany();
+    const data = await prisma.booking.findMany();
     successRes(res, 200, { data }, "Get booking successful");
   } catch (e: any) {
     console.error("Error in :", e);
@@ -36,7 +36,7 @@ export const addBooking = async (
     if (!borrower_id && !room_id && !booking_date && !start_time && !end_time) {
       errorRes(res, 404, "Field must be fulied");
     }
-    const data = await prisma.roomBooking.create({
+    const data = await prisma.booking.create({
       data: {
         borrower_id,
         room_id,
@@ -61,7 +61,7 @@ export const getBookingById = async (
 ): Promise<void> => {
   try {
     const { id } = req.params;
-    const data = await prisma.roomBooking.findUnique({
+    const data = await prisma.booking.findUnique({
       where: {
         id: Number(id),
       },
@@ -88,7 +88,7 @@ export const updateBooking = async (
       notes,
       booking_status,
     } = req.body;
-    const data = await prisma.roomBooking.update({
+    const data = await prisma.booking.update({
       where: {
         id: Number(id),
       },
@@ -115,7 +115,7 @@ export const deleteBooking = async (
 ): Promise<void> => {
   try {
     const { id } = req.params;
-    const data = await prisma.roomBooking.delete({
+    const data = await prisma.booking.delete({
       where: { id: Number(id) },
     });
     successRes(res, 200, { data }, "  successful");

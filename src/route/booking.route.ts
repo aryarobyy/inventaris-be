@@ -5,7 +5,7 @@ import {
   getBookingById,
   getBookings,
   updateBooking,
-} from "../controller/roomBooking.controller";
+} from "../controller/booking.controller";
 
 const router = Router();
 
