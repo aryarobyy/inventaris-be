@@ -31,7 +31,7 @@ model User {
   updated_at    DateTime        @default(now())
   
   loans         Loan[]
-  room_bookings  RoomBooking[]
+  room_bookings  Booking[]
 }
 
 model Item {
@@ -72,7 +72,6 @@ model LoanItem {
   loan_id          Int
   item_id          Int
   borrowed_quantity Int       @default(1)
-  returned_at       DateTime?
 
   loan              Loan        @relation(fields: [loan_id], references: [id], onDelete: Cascade)
   item              Item        @relation(fields: [item_id], references: [id], onDelete: Restrict)
@@ -93,10 +92,11 @@ model Room {
   updated_at  DateTime      @default(now())
   
   room_status RoomStatus
-  bookings    RoomBooking[]
+  bookings    Booking[]
+  booking_rooms BookingRooms[]
 }
 
-model RoomBooking {
+model Booking {
   id                 Int         @id @default(autoincrement())
   borrower_id        Int
   room_id            Int
@@ -112,6 +112,16 @@ model RoomBooking {
   booking_status     BookingStatus
   room               Room        @relation(fields: [room_id], references: [id], onDelete: Restrict)
   borrower           User        @relation(fields: [borrower_id], references: [id], onDelete: Restrict)
+  booking_rooms BookingRooms[]
+}
+
+model BookingRooms {
+  id          Int           @id @default(autoincrement())
+  booking_id  Int
+  room_id     Int 
+
+  booking     Booking      @relation(fields: [booking_id], references: [id], onDelete: Cascade)
+  room        Room         @relation(fields: [room_id], references: [id], onDelete: Cascade)
 }
 
 // ENUMS

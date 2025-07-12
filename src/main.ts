@@ -5,7 +5,6 @@ import AdminRouter from "./route/admin.route";
 import ItemRouter from "./route/item.route";
 import RoomRouter from "./route/room.route";
 import BookingRouter from "./route/booking.route";
-import LoanItemRouter from "./route/loanItem.route";
 import LoanRouter from "./route/loan.route";
 
 dotenv.config();
@@ -22,7 +21,6 @@ app.use("/admin", AdminRouter);
 app.use("/item", ItemRouter);
 app.use("/room", RoomRouter);
 app.use("/booking", BookingRouter);
-app.use("/loanitem", LoanItemRouter);
 app.use("/loan", LoanRouter)
 
 app
