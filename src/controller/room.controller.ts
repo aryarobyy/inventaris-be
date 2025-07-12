@@ -32,7 +32,7 @@ export const addRoom = async (
       room_status,
     } = req.body;
     if (!room_name && !room_status) {
-      errorRes(res, 400, "Room name are required");
+      errorRes(res, 404, "Room name are required");
       return;
     }
     const data = await prisma.room.create({
@@ -45,7 +45,7 @@ export const addRoom = async (
         room_status,
       },
     });
-    successRes(res, 200, { data }, "Add room successful");
+    successRes(res, 201, { data }, "Add room successful");
   } catch (e: any) {
     console.error("Error in :", e);
     errorRes(res, 500, "Error ", e.message);
@@ -63,7 +63,7 @@ export const getRoomById = async (
       where: { id: Number(id) },
     });
     if (!data) {
-      errorRes(res, 400, "Room not found");
+      errorRes(res, 404, "Room not found");
     }
     successRes(res, 200, { data }, "Get By id successful");
   } catch (e: any) {

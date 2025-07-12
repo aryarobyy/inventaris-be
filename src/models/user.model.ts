@@ -14,7 +14,7 @@ export interface UserModel {
   
   // Relations
   loans?: LoanItemModel[];
-  roomBookings?: RoomBookingModel[];
+  room_bookings?: RoomBookingModel[];
 }
 
 export interface PostUserModel {

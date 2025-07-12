@@ -34,7 +34,7 @@ export const registerAdmin = async (
     try{
         const { username, name, password } = req.body;
         if (!username || !name || !password) {
-            errorRes(res, 400, "All fields are required");
+            errorRes(res, 404, "All fields are required");
             return
         }
         const hashedPassword = await bcrypt.hash(password, 10)
@@ -47,7 +47,7 @@ export const registerAdmin = async (
             }
         });
 
-        successRes(res, 200, { newData }, "add data successful");
+        successRes(res, 201, { newData }, "add data successful");
     } catch (e: any) {
         console.error("Error in :", e);
         errorRes(res, 500, "Error ", e.message);
@@ -63,7 +63,7 @@ export const loginAdmin = async (
         const { username, password } = req.body;
 
         if (!username || !password) {
-        errorRes(res, 400, "Username dan password wajib diisi");
+        errorRes(res, 404, "Username dan password wajib diisi");
         return;
         }
 

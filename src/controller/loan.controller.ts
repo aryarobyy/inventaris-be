@@ -412,7 +412,6 @@ export const returnLoan = async (
               item_id: item.item_id,
             },
             data: {
-              returned_at: new Date(return_date),
               return_condition: item.return_condition || null,
             },
           });

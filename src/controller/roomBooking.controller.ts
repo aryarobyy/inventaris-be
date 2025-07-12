@@ -34,7 +34,7 @@ export const addBooking = async (
     } = req.body;
 
     if (!borrower_id && !room_id && !booking_date && !start_time && !end_time) {
-      errorRes(res, 400, "Field must be fulied");
+      errorRes(res, 404, "Field must be fulied");
     }
     const data = await prisma.roomBooking.create({
       data: {
@@ -48,7 +48,7 @@ export const addBooking = async (
         booking_status,
       },
     });
-    successRes(res, 200, { data }, "booking successful");
+    successRes(res, 201, { data }, "booking successful");
   } catch (e: any) {
     console.error("Error in :", e);
     errorRes(res, 500, "Error ", e.message);

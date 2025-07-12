@@ -25,7 +25,7 @@ export const addUser = async (
     try{
         const { name, student_id, academic_year, major_name, phone_number, organization } = req.body;
         if (!name || !student_id || !academic_year || !major_name || !phone_number || !organization) {
-            errorRes(res, 400, "All fields are required");
+            errorRes(res, 404, "All fields are required");
             return
         }
         
@@ -34,7 +34,7 @@ export const addUser = async (
         });
 
         if(existingUser) {
-            errorRes(res, 400, "User with this student ID already exists");
+            errorRes(res, 404, "User with this student ID already exists");
             return;
         }
 
@@ -49,7 +49,7 @@ export const addUser = async (
             }
         });
 
-        successRes(res, 200, { data }, "post user successful");
+        successRes(res, 201, { data }, "post user successful");
     } catch (e: any) {
         console.error("Error in :", e);
         errorRes(res, 500, "Error ", e.message);
@@ -124,7 +124,7 @@ export const getUserByNim = async (
     try{
         const { nim } = req.body;
         if (!nim) {
-            errorRes(res, 400, "NIM is required");
+            errorRes(res, 404, "NIM is required");
             return;
         }
         

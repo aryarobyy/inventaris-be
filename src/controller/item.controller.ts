@@ -91,7 +91,7 @@ export const addItem = async (
       category,
     } = req.body;
     if (!name) {
-      errorRes(res, 400, "Name are required");
+      errorRes(res, 404, "Name are required");
       return;
     }
 
@@ -109,7 +109,7 @@ export const addItem = async (
       },
     });
 
-    successRes(res, 200, { data }, "post item successful");
+    successRes(res, 201, { data }, "post item successful");
   } catch (e: any) {
     console.error("Error in :", e);
     errorRes(res, 500, "Error ", e.message);
