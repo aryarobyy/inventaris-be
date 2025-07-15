@@ -2,6 +2,7 @@ import { NextFunction, Request, Response } from "express";
 import { errorRes, successRes } from "../utils/response";
 import prisma from "../prisma/prisma";
 import { ItemModel } from "../models/item.model";
+import { ItemCategory } from "@prisma/client";
 
 export const getItems = async (
   req: Request,
@@ -195,6 +196,23 @@ export const updateItem = async (
     errorRes(res, 500, "Error ", e.message);
   }
 };
+
+export const getItemByCat = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+): Promise<void> =>{
+    try{
+        const { category } = req.params;
+        const data = await prisma.item.findMany({
+          where: { category: category as ItemCategory }
+        })
+        successRes(res, 200, { data }, "getting item successful");
+    } catch (e: any) {
+        console.error("Error in :", e);
+        errorRes(res, 500, "Error ", e.message);
+    }
+}
 
 export const deleteItem = async (
   req: Request,
