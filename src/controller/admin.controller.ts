@@ -10,17 +10,7 @@ export const getAdmins = async (
     next: NextFunction
 ): Promise<void> =>{
     try{
-        const data: AdminModel[] = await prisma.admin.findMany({
-            select: {
-                id: true,
-                username: true,
-                name: true,
-                role: true,
-                status: true,
-                created_at: true,
-                updated_at: true
-            }
-        });
+        const data: AdminModel[] = await prisma.admin.findMany();
         successRes(res, 200, { data }, "get data successful");
     } catch (e: any) {
         console.error("Error in :", e);
@@ -106,15 +96,6 @@ export const getAdminById = async (
         const { id }= req.params;
         const data: AdminModel | null = await prisma.admin.findUnique({
             where: { id: Number(id) },
-            select: {
-                id: true,
-                name: true,
-                username: true,
-                status: true,
-                role: true,
-                created_at: true,
-                updated_at: true
-            }
         });
         if (!data) {
             errorRes(res, 404, "admin not found");

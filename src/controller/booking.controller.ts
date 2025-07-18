@@ -66,20 +66,6 @@ export const getBookingById = async (
       where: {
         id: Number(id),
       },
-      select: {
-        id: true,
-        borrower_id: true,
-        room_id: true,
-        booking_date: true,
-        start_time: true,
-        end_time: true,
-        purpose: true,
-        notes: true,
-        booking_status: true,
-        actual_return_time: true,
-        updated_at: true,
-        created_at: true,
-      }
     });
     successRes(res, 200, { data }, "Successful");
   } catch (e: any) {
