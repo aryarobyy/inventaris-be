@@ -1,7 +1,8 @@
 import { NextFunction, Request, Response } from "express";
 import { errorRes, successRes } from "../utils/response";
 import prisma from "../prisma/prisma";
-import { LoanStatus } from "@prisma/client";
+import { LoanModel, PostLoanModel, UpdateLoanModel } from "../models/loan.model";
+import { LoanStatus } from "../models/enums";
 
 export const getLoans = async (
   req: Request,
@@ -9,17 +10,19 @@ export const getLoans = async (
   next: NextFunction,
 ): Promise<void> => {
   try {
-    const data = await prisma.loan.findMany({
+    const data: LoanModel[] = await prisma.loan.findMany({
       include: {
         borrower: {
           select: {
             id: true,
             name: true,
-            student_id: true,
+            student_id: true, 
             major_name: true,
             academic_year: true,
             phone_number: true,
             organization: true,
+            created_at: true,
+            updated_at: true,
           },
         },
         loan_items: {
@@ -31,6 +34,7 @@ export const getLoans = async (
                 description: true,
                 category: true,
                 condition_status: true,
+                borrowed_quantity: true,
                 availability_status: true,
               },
             },
@@ -59,23 +63,13 @@ export const addLoan = async (
       notes,
       loan_status,
       loan_items,
-    } = req.body;
+    }: PostLoanModel = req.body;
 
-    const requiredFields = [
-      borrower_id,
-      loan_date,
-      due_date,
-      return_date,
-      notes,
-      loan_status,
-      loan_items,
-    ]
 
-    requiredFields.forEach(field => {
-      if (!field.value.trim()) {
-        errorRes(res, 404, `${field.name} cant be empty.`);
-      }
-    });
+    if(!borrower_id && !loan_status){
+      errorRes(res, 404, "Borrwoer_id and loan_status cannot be null")
+      return
+    }
 
     if (!Array.isArray(loan_items) || loan_items.length === 0) {
       errorRes(res, 404, "loan_items must be a non-empty array");
@@ -170,18 +164,20 @@ export const getLoanById = async (
 ): Promise<void> => {
   try {
     const { id } = req.params;
-    const data = await prisma.loan.findUnique({
+    const data: LoanModel | null = await prisma.loan.findUnique({
       where: { id: Number(id) },
       include: {
         borrower: {
           select: {
             id: true,
             name: true,
-            student_id: true,
+            student_id: true, 
             major_name: true,
             academic_year: true,
             phone_number: true,
             organization: true,
+            created_at: true,
+            updated_at: true,
           },
         },
         loan_items: {
@@ -193,6 +189,7 @@ export const getLoanById = async (
                 description: true,
                 category: true,
                 condition_status: true,
+                borrowed_quantity: true,
                 availability_status: true,
               },
             },
@@ -202,6 +199,7 @@ export const getLoanById = async (
     });
     if (!data) {
       errorRes(res, 404, "Loan data not found");
+      return
     }
     successRes(res, 200, { data }, "Get By Id successful");
   } catch (e: any) {
@@ -210,6 +208,56 @@ export const getLoanById = async (
   }
 };
 
+export const getLoanByStatus = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+): Promise<void> => {
+  try {
+    const { status } = req.params;
+    const data: LoanModel[] = await prisma.loan.findMany({
+      where: { loan_status: status as LoanStatus },
+      include: {
+        borrower: {
+          select: {
+            id: true,
+            name: true,
+            student_id: true, 
+            major_name: true,
+            academic_year: true,
+            phone_number: true,
+            organization: true,
+            created_at: true,
+            updated_at: true,
+          },
+        },
+        loan_items: {
+          include: {
+            item: {
+              select: {
+                id: true,
+                name: true,
+                description: true,
+                category: true,
+                condition_status: true,
+                borrowed_quantity: true,
+                availability_status: true,
+              },
+            },
+          },
+        },
+      },
+    });
+    if (!data || data.length === 0) {
+      errorRes(res, 404, "Loan data not found");
+      return;
+    }
+    successRes(res, 200, { data }, "Get By Status successful");
+  } catch (e: any) {
+    console.error("Error in :", e);
+    errorRes(res, 500, "Error ", e.message);
+  }
+};
 
 export const updateLoan = async (
   req: Request,
@@ -219,14 +267,14 @@ export const updateLoan = async (
   try {
     const { id } = req.params;
     const {
-      borrower_id,
       loan_date,
       due_date,
       return_date,
       notes,
       loan_status,
       loan_items,
-    } = req.body;
+    }: UpdateLoanModel = req.body;
+
 
     const existingLoan = await prisma.loan.findUnique({
       where: { id: Number(id) },
@@ -242,7 +290,6 @@ export const updateLoan = async (
         await t.loan.update({
           where: { id: Number(id) },
           data: {
-            borrower_id,
             loan_date: loan_date ? new Date(loan_date) : undefined,
             due_date: due_date ? new Date(due_date) : undefined,
             return_date: return_date ? new Date(return_date) : undefined,
@@ -308,7 +355,6 @@ export const updateLoan = async (
       const data = await prisma.loan.update({
         where: { id: Number(id) },
         data: {
-          borrower_id,
           loan_date: loan_date ? new Date(loan_date) : undefined,
           due_date: due_date ? new Date(due_date) : undefined,
           return_date: return_date ? new Date(return_date) : undefined,
@@ -352,6 +398,7 @@ export const updateLoan = async (
     errorRes(res, 500, "Error updating loan", e.message);
   }
 };
+
 export const deleteLoan = async (
   req: Request,
   res: Response,
@@ -399,7 +446,7 @@ export const returnLoan = async (
         where: { id: Number(id) },
         data: {
           return_date: new Date(return_date),
-          loan_status: LoanStatus.returned,
+          loan_status: 'returned',
           updated_at: new Date(),
         },
       });

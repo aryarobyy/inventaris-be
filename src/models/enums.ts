@@ -1,56 +1,13 @@
-export enum Role {
-  PENDING = 'pending',
-  ADMIN = 'admin',
-  SUPER_ADMIN = 'super_admin'
-}
+export type Role = 'pending' | 'admin' | 'super_admin';
 
-export enum ItemCategory {
-  COMPUTER = 'computer',
-  WEB_CAM = 'web_cam',
-  PRINTER = 'printer',
-  PROJECTOR = 'projector',
-  CABLE = 'cable',
-  MOUSE = 'mouse',
-  KEYBOARD = 'keyboard',
-  HEADSET = 'headset',
-  MONITOR = 'monitor',
-  LAPTOP = 'laptop'
-}
+export type ItemCategory = 'computer' | 'web_cam' | 'printer' | 'projector' | 'cable' | 'mouse' | 'keyboard' | 'headset' | 'monitor' | 'laptop';
 
-export enum ItemCondition {
-  GOOD = 'good',
-  DAMAGED = 'damaged',
-  REPAIR = 'repair',
-  LOST = 'lost'
-}
+export type ItemCondition = 'good' | 'damaged' | 'repair' | 'lost';
 
-export enum ItemAvailability {
-  AVAILABLE = 'available',
-  BORROWED = 'borrowed',
-  MAINTENANCE = 'maintenance',
-  RETIRED = 'retired'
-}
+export type ItemAvailability = 'available' | 'borrowed' | 'maintenance' | 'retired';
 
-export enum LoanStatus {
-  PENDING = 'pending',
-  APPROVED = 'approved',
-  ACTIVE = 'active',
-  RETURNED = 'returned',
-  OVERDUE = 'overdue',
-  CANCELLED = 'cancelled'
-}
+export type LoanStatus = 'pending' | 'approved' | 'active' | 'returned' | 'overdue' | 'cancelled';
 
-export enum RoomStatus {
-  AVAILABLE = 'available',
-  OCCUPIED = 'occupied',
-  MAINTENANCE = 'maintenance',
-  OUT_OF_SERVICE = 'out_of_service'
-}
+export type RoomStatus = 'available' | 'occupied' | 'maintenance' | 'out_of_service';
 
-export enum BookingStatus {
-  PENDING = 'pending',
-  APPROVED = 'approved',
-  ACTIVE = 'active',
-  COMPLETED = 'completed',
-  CANCELLED = 'cancelled'
-}
+export type BookingStatus = 'pending' | 'approved' | 'active' | 'completed' | 'cancelled';

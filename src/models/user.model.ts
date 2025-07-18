@@ -1,5 +1,5 @@
-import { LoanItemModel } from "./loanItem.model";
 import { RoomBookingModel } from "./booking.model";
+import { LoanItemModel } from "./item.model";
 
 export interface UserModel {
   id: number;

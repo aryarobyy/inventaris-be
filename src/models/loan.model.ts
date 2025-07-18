@@ -1,6 +1,6 @@
 import { LoanStatus } from "@prisma/client";
-import { LoanItemModel } from "./loanItem.model";
 import { UserModel } from "./user.model";
+import { LoanItemModel } from "./item.model";
 
 export interface LoanModel {
   id: number;
@@ -13,7 +13,7 @@ export interface LoanModel {
   created_at: Date;
   updated_at: Date;
   loan_status: LoanStatus;
-  loanItems: LoanItemModel[];
+  loan_items: LoanItemModel[];
 }
 
 export interface PostLoanModel {

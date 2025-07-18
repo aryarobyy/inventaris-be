@@ -39,6 +39,7 @@ model Item {
   name               String
   description        String?
   quantity           Int              @default(1)
+  borrowed_quantity  Int              @default(0)
   brand              String?
   imgUrl             String?
   pair_id            Int?

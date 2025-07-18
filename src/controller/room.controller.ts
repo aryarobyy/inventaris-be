@@ -1,7 +1,6 @@
 import { NextFunction, Request, Response } from "express";
 import { errorRes, successRes } from "../utils/response";
 import prisma from "../prisma/prisma";
-import { PostRoomModel, UpdateRoomModel } from "../models/room.model";
 
 export const getRooms = async (
   req: Request,

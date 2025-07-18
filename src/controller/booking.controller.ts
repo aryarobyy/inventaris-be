@@ -1,6 +1,7 @@
 import { NextFunction, Request, Response } from "express";
 import { errorRes, successRes } from "../utils/response";
 import prisma from "../prisma/prisma";
+import { PostRoomBookingModel, RoomBookingModel, UpdateRoomBookingModel } from "../models/booking.model";
 
 export const getBookings = async (
   req: Request,
@@ -8,7 +9,7 @@ export const getBookings = async (
   next: NextFunction,
 ): Promise<void> => {
   try {
-    const data = await prisma.booking.findMany();
+    const data: RoomBookingModel[] = await prisma.booking.findMany();
     successRes(res, 200, { data }, "Get booking successful");
   } catch (e: any) {
     console.error("Error in :", e);
@@ -36,7 +37,7 @@ export const addBooking = async (
     if (!borrower_id && !room_id && !booking_date && !start_time && !end_time) {
       errorRes(res, 404, "Field must be fulied");
     }
-    const data = await prisma.booking.create({
+    const data: PostRoomBookingModel = await prisma.booking.create({
       data: {
         borrower_id,
         room_id,
@@ -61,10 +62,24 @@ export const getBookingById = async (
 ): Promise<void> => {
   try {
     const { id } = req.params;
-    const data = await prisma.booking.findUnique({
+    const data: RoomBookingModel | null= await prisma.booking.findUnique({
       where: {
         id: Number(id),
       },
+      select: {
+        id: true,
+        borrower_id: true,
+        room_id: true,
+        booking_date: true,
+        start_time: true,
+        end_time: true,
+        purpose: true,
+        notes: true,
+        booking_status: true,
+        actual_return_time: true,
+        updated_at: true,
+        created_at: true,
+      }
     });
     successRes(res, 200, { data }, "Successful");
   } catch (e: any) {
@@ -88,7 +103,7 @@ export const updateBooking = async (
       notes,
       booking_status,
     } = req.body;
-    const data = await prisma.booking.update({
+    const data: UpdateRoomBookingModel = await prisma.booking.update({
       where: {
         id: Number(id),
       },

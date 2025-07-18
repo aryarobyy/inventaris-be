@@ -2,6 +2,7 @@ import { NextFunction, Request, Response } from "express";
 import { errorRes, successRes } from "../utils/response";
 import prisma from "../prisma/prisma";
 import bcrypt from "bcryptjs";
+import { AdminModel, LoginAdmin, PostAdminModel, UpdateAdminModel } from "../models/admin.model";
 
 export const getAdmins = async (
     req: Request,
@@ -9,11 +10,12 @@ export const getAdmins = async (
     next: NextFunction
 ): Promise<void> =>{
     try{
-        const data = await prisma.admin.findMany({
+        const data: AdminModel[] = await prisma.admin.findMany({
             select: {
                 id: true,
                 username: true,
                 name: true,
+                role: true,
                 status: true,
                 created_at: true,
                 updated_at: true
@@ -39,7 +41,7 @@ export const registerAdmin = async (
         }
         const hashedPassword = await bcrypt.hash(password, 10)
         
-        const newData = await prisma.admin.create({
+        const data: PostAdminModel = await prisma.admin.create({
             data: {
                 username,
                 password: hashedPassword,
@@ -47,7 +49,7 @@ export const registerAdmin = async (
             }
         });
 
-        successRes(res, 201, { newData }, "add data successful");
+        successRes(res, 201, { data }, "add data successful");
     } catch (e: any) {
         console.error("Error in :", e);
         errorRes(res, 500, "Error ", e.message);
@@ -63,31 +65,35 @@ export const loginAdmin = async (
         const { username, password } = req.body;
 
         if (!username || !password) {
-        errorRes(res, 404, "Username dan password wajib diisi");
+        errorRes(res, 404, "Username dan password cannot be null");
         return;
         }
 
-        const admin = await prisma.admin.findUnique({
-        where: { username },
+        const admin: LoginAdmin | null = await prisma.admin.findUnique({
+            where: { username },
+            select: {
+                username: true,
+                password: true
+            }
         });
 
         if (!admin) {
-        errorRes(res, 401, "Username atau password salah");
+        errorRes(res, 401, "Wrong username");
         return;
         }
 
         const isMatch = await bcrypt.compare(password, admin.password);
         if (!isMatch) {
-        errorRes(res, 401, "Username atau password salah");
+        errorRes(res, 401, "wrong password");
         return;
         }
 
-        const { password: _, ...adminData } = admin;
+        const { password: _, ...data } = admin;
 
-        successRes(res, 200, adminData, "Login berhasil");
+        successRes(res, 200, { data }, "Login success");
     } catch (e: any) {
         console.error("Login error:", e);
-        errorRes(res, 500, "Terjadi kesalahan", e.message);
+        errorRes(res, 500, "Error in:", e.message);
     }
 };
 
@@ -98,7 +104,7 @@ export const getAdminById = async (
 ): Promise<void> =>{
     try{
         const { id }= req.params;
-        const data = await prisma.admin.findUnique({
+        const data: AdminModel | null = await prisma.admin.findUnique({
             where: { id: Number(id) },
             select: {
                 id: true,
@@ -130,7 +136,7 @@ export const updateAdmin = async (
         const { id }= req.params;
         const { name, username, status } = req.body;
 
-        const updatedData = await prisma.admin.update({
+        const data: UpdateAdminModel = await prisma.admin.update({
             where: { id: Number(id) },
             data: {
                 name,
@@ -139,7 +145,7 @@ export const updateAdmin = async (
             }
         });
 
-        successRes(res, 200, { updatedData }, "update user successful");
+        successRes(res, 200, { data }, "update user successful");
     } catch (e: any) {
         console.error("Error in :", e);
         errorRes(res, 500, "Error ", e.message);
