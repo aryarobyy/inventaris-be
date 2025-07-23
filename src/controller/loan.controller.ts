@@ -63,16 +63,22 @@ export const addLoan = async (
       notes,
       loan_status,
       loan_items,
-    }: PostLoanModel = req.body;
+    } = req.body;
 
 
     if(!borrower_id && !loan_status){
-      errorRes(res, 404, "Borrwoer_id and loan_status cannot be null")
+      errorRes(res, 400, "Borrwoer_id and loan_status cannot be null")
       return
     }
 
+    if (!loan_date || !due_date || isNaN(Date.parse(loan_date)) || isNaN(Date.parse(due_date))) {
+      errorRes(res, 400, "Invalid or missing loan_date or due_date");
+      return;
+    }
+
+
     if (!Array.isArray(loan_items) || loan_items.length === 0) {
-      errorRes(res, 404, "loan_items must be a non-empty array");
+      errorRes(res, 400, "loan_items must be a non-empty array");
       return;
     }
 
@@ -81,7 +87,7 @@ export const addLoan = async (
     });
 
     if (!borrower) {
-      errorRes(res, 404, "Borrower not found");
+      errorRes(res, 400, "Borrower not found");
       return;
     }
 
@@ -91,7 +97,7 @@ export const addLoan = async (
     });
 
     if (items.length !== itemIds.length) {
-      errorRes(res, 404, "One or more items not found");
+      errorRes(res, 400, "One or more items not found");
       return;
     }
 
@@ -502,4 +508,38 @@ export const returnLoan = async (
     console.error("Error in returnLoan:", e);
     errorRes(res, 500, "Error returning loan", e.message);
   }
+};
+
+export const runUpdateActiveLoans = async () => {
+  const today = new Date().toISOString().split("T")[0]; 
+
+  await prisma.loan.updateMany({
+    where: {
+      loan_status: "approved",
+      loan_date: {
+        lte: new Date(today), 
+      },
+    },
+    data: {
+      loan_status: "active",
+    },
+  });
+};
+
+export const runOverdueLoans = async () => {
+  const today = new Date();
+  today.setHours(0, 0, 0, 0); 
+
+  await prisma.loan.updateMany({
+    where: {
+      loan_status: "active",
+      return_date: null, 
+      due_date: {
+        lt: today,
+      },
+    },
+    data: {
+      loan_status: "overdue",
+    },
+  });
 };

@@ -6,7 +6,9 @@ import ItemRouter from "./route/item.route";
 import RoomRouter from "./route/room.route";
 import BookingRouter from "./route/booking.route";
 import LoanRouter from "./route/loan.route";
-import cors from "cors"
+import cors from "cors";
+import cron from "node-cron";
+import { runOverdueLoans, runUpdateActiveLoans } from "./controller/loan.controller";
 
 dotenv.config();
 const app = express();
@@ -22,6 +24,13 @@ app.use(cors());
 // app.use(cors({
 //   origin: 'http://localhost:5173'
 // }));
+
+cron.schedule("0 0 * * *", async () => { //kalau server sudah publish ganti jadi 0 0
+  console.log("⏰ Cron running...");
+  await runUpdateActiveLoans();
+  await runOverdueLoans();
+  console.log("✅ Cron completed.");
+})
 
 app.use("/user", UserRouter);
 app.use("/admin", AdminRouter);
