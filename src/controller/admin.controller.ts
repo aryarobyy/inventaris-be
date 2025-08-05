@@ -10,7 +10,7 @@ export const getAdmins = async (
     next: NextFunction
 ): Promise<void> =>{
     try{
-        const data: AdminModel[] = await prisma.admin.findMany();
+        const data = await prisma.admin.findMany();
         successRes(res, 200, { data }, "get data successful");
     } catch (e: any) {
         console.error("Error in :", e);
@@ -61,10 +61,6 @@ export const loginAdmin = async (
 
         const admin: LoginAdmin | null = await prisma.admin.findUnique({
             where: { username },
-            select: {
-                username: true,
-                password: true
-            }
         });
 
         if (!admin) {
@@ -115,12 +111,13 @@ export const updateAdmin = async (
 ): Promise<void> =>{
     try{
         const { id }= req.params;
-        const { name, username, status } = req.body;
+        const { name, username, status, role } = req.body;
 
         const data: UpdateAdminModel = await prisma.admin.update({
             where: { id: Number(id) },
             data: {
                 name,
+                role,
                 username,
                 status
             }

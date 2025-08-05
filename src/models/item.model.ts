@@ -4,6 +4,7 @@ export interface LoanItemModel {
   id: number;
   loan_id: number;
   item_id: number;
+  stock: number;
   borrowed_quantity: number;
   borrow_condition: ItemCondition | null;
   return_condition: ItemCondition | null;
@@ -17,6 +18,7 @@ export interface ItemModel {
   id: number;
   name: string;
   description: string | null;
+  stock: number;
   quantity: number;
   borrowed_quantity: number;
   brand: string | null;
@@ -35,6 +37,7 @@ export interface ItemModel {
 export interface PostItemModel {
   name: string;
   description: string | null;
+  stock: number | null;
   quantity: number | null;
   brand: string | null;
   imgUrl: string | null;
@@ -49,6 +52,7 @@ export interface PostItemModel {
 export interface UpdateItemModel {
   name: string | null;
   description: string | null;
+  stock: number | null;
   quantity: number | null;
   brand: string | null;
   imgUrl: string | null;

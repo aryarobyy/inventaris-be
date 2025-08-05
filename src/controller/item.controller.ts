@@ -10,29 +10,31 @@ export const getItems = async (
   next: NextFunction,
 ): Promise<void> => {
   try {
-    const data: ItemModel[] = await prisma.item.findMany({
+    const data = await prisma.item.findMany({
       select: {
         id: true,
         name: true,
         description: true,
         brand: true,
         imgUrl: true,
+        stock: true,
         quantity: true,
         borrowed_quantity: true,
         category: true,
         condition_status: true,
         availability_status: true,
         loan_items: {
-          include: {
+          select: {
+            id: true,
+            loan_id: true,
+            item_id: true,
+            borrowed_quantity: true,
+            borrow_condition: true,
+            return_condition: true,
             item: {
               select: {
                 id: true,
                 name: true,
-                description: true,
-                category: true,
-                condition_status: true,
-                borrowed_quantity: true,
-                availability_status: true,
               },
             },
           },
@@ -110,6 +112,7 @@ export const addItem = async (
       data: {
         name,
         description,
+        stock: quantity,
         quantity,
         brand,
         pair_id,
@@ -134,7 +137,7 @@ export const getItemById = async (
 ): Promise<void> => {
   try {
     const { id } = req.params;
-    const data: ItemModel | null = await prisma.item.findUnique({
+    const data = await prisma.item.findUnique({
       where: { id: Number(id) },
       select: {
         id: true,
@@ -142,6 +145,7 @@ export const getItemById = async (
         description: true,
         brand: true,
         imgUrl: true,
+        stock: true,
         quantity: true,
         borrowed_quantity: true,
         category: true,
@@ -230,7 +234,7 @@ export const getItemByCat = async (
 ): Promise<void> =>{
     try{
         const { category } = req.params;
-        const data: ItemModel[] = await prisma.item.findMany({
+        const data = await prisma.item.findMany({
           where: { category: category as ItemCategory },
             select: {
               id: true,
@@ -238,6 +242,7 @@ export const getItemByCat = async (
               description: true,
               brand: true,
               imgUrl: true,
+              stock: true,
               quantity: true,
               borrowed_quantity: true,
               category: true,

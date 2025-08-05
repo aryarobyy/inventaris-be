@@ -10,38 +10,7 @@ export const getLoans = async (
   next: NextFunction,
 ): Promise<void> => {
   try {
-    const data: LoanModel[] = await prisma.loan.findMany({
-      include: {
-        borrower: {
-          select: {
-            id: true,
-            name: true,
-            student_id: true, 
-            major_name: true,
-            academic_year: true,
-            phone_number: true,
-            organization: true,
-            created_at: true,
-            updated_at: true,
-          },
-        },
-        loan_items: {
-          include: {
-            item: {
-              select: {
-                id: true,
-                name: true,
-                description: true,
-                category: true,
-                condition_status: true,
-                borrowed_quantity: true,
-                availability_status: true,
-              },
-            },
-          },
-        },
-      },
-    });
+    const data = await prisma.loan.findMany();
     successRes(res, 200, { data }, "get Loans successful");
   } catch (e: any) {
     console.error("Error in :", e);
@@ -133,9 +102,7 @@ export const addLoan = async (
               name: true,
               student_id: true,
               major_name: true,
-              academic_year: true,
               phone_number: true,
-              organization: true,
             },
           },
           loan_items: {
@@ -170,38 +137,46 @@ export const getLoanById = async (
 ): Promise<void> => {
   try {
     const { id } = req.params;
-    const data: LoanModel | null = await prisma.loan.findUnique({
+    const data = await prisma.loan.findUnique({
       where: { id: Number(id) },
-      include: {
-        borrower: {
-          select: {
-            id: true,
-            name: true,
-            student_id: true, 
-            major_name: true,
-            academic_year: true,
-            phone_number: true,
-            organization: true,
-            created_at: true,
-            updated_at: true,
+        include: {
+          borrower: {
+            select: {
+              id: true,
+              name: true,
+              student_id: true,
+              major_name: true,
+              phone_number: true,
+            },
           },
-        },
-        loan_items: {
-          include: {
-            item: {
-              select: {
-                id: true,
-                name: true,
-                description: true,
-                category: true,
-                condition_status: true,
-                borrowed_quantity: true,
-                availability_status: true,
+          loan_items: {
+            include: {
+              item: {
+                select: {
+                  id: true,
+                  name: true,
+                  description: true,
+                  category: true,
+                  condition_status: true,
+                  availability_status: true,
+                },
+              },
+            },
+            select: {
+              id: true,
+              item: {
+                select: {
+                  id: true,
+                  name: true,
+                  description: true,
+                  category: true,
+                  condition_status: true,
+                  availability_status: true,
+                },
               },
             },
           },
         },
-      },
     });
     if (!data) {
       errorRes(res, 404, "Loan data not found");
@@ -221,7 +196,7 @@ export const getLoanByStatus = async (
 ): Promise<void> => {
   try {
     const { status } = req.params;
-    const data: LoanModel[] = await prisma.loan.findMany({
+    const data = await prisma.loan.findMany({
       where: { loan_status: status as LoanStatus },
       include: {
         borrower: {
@@ -230,9 +205,7 @@ export const getLoanByStatus = async (
             name: true,
             student_id: true, 
             major_name: true,
-            academic_year: true,
             phone_number: true,
-            organization: true,
             created_at: true,
             updated_at: true,
           },
@@ -333,9 +306,7 @@ export const updateLoan = async (
                 name: true,
                 student_id: true,
                 major_name: true,
-                academic_year: true,
                 phone_number: true,
-                organization: true,
               },
             },
             loan_items: {
@@ -375,9 +346,7 @@ export const updateLoan = async (
               name: true,
               student_id: true,
               major_name: true,
-              academic_year: true,
               phone_number: true,
-              organization: true,
             },
           },
           loan_items: {
@@ -480,9 +449,7 @@ export const returnLoan = async (
               name: true,
               student_id: true,
               major_name: true,
-              academic_year: true,
               phone_number: true,
-              organization: true,
             },
           },
           loan_items: {

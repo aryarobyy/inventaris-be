@@ -1,7 +1,7 @@
 import { NextFunction, Request, Response } from "express";
 import { errorRes, successRes } from "../utils/response";
 import prisma from "../prisma/prisma";
-import { PostUserModel, UpdateUserModel, UserModel } from "../models/user.model";
+import { PostUserModel, UpdateUserModel, UserModel, UserNim } from "../models/user.model";
 
 export const getUsers = async (
     req: Request,
@@ -23,8 +23,8 @@ export const addUser = async (
     next: NextFunction
 ): Promise<void> =>{
     try{
-        const { name, student_id, academic_year, major_name, phone_number, organization } = req.body;
-        if (!name || !student_id || !academic_year || !major_name || !phone_number || !organization) {
+        const { name, student_id, major_name, phone_number, organization } = req.body;
+        if (!name || !student_id || !major_name || !phone_number || !organization) {
             errorRes(res, 404, "All fields are required");
             return
         }
@@ -42,10 +42,8 @@ export const addUser = async (
             data: {
                 name,
                 student_id,
-                academic_year,
                 major_name,
                 phone_number,
-                organization
             }
         });
 
@@ -69,10 +67,8 @@ export const getUserById = async (
                 id: true,
                 name: true,
                 student_id: true,
-                academic_year: true,
                 major_name: true,
                 phone_number: true,
-                organization: true,
                 created_at: true,
                 updated_at: true
             }
@@ -95,17 +91,15 @@ export const updateUser = async (
 ): Promise<void> =>{
     try{
         const { id }= req.params;
-        const { name, student_id, academic_year, major_name, phone_number, organization } = req.body;
+        const { name, student_id, major_name, phone_number, organization } = req.body;
 
         const data: UpdateUserModel = await prisma.user.update({
             where: { id: Number(id) },
             data: {
                 name,
                 student_id,
-                academic_year,
                 major_name,
                 phone_number,
-                organization
             }
         });
 
@@ -134,10 +128,8 @@ export const getUserByNim = async (
                 id: true,
                 name: true,
                 student_id: true,
-                academic_year: true,
                 major_name: true,
                 phone_number: true,
-                organization: true,
                 created_at: true,
                 updated_at: true
             }
@@ -148,7 +140,25 @@ export const getUserByNim = async (
             return;
         }
 
-        successRes(res, 200, { data }, "  successful");
+        successRes(res, 200, { data }, "get user by nim successful");
+    } catch (e: any) {
+        console.error("Error in :", e);
+        errorRes(res, 500, "Error ", e.message);
+    }
+}
+
+export const getNims = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+): Promise<void> => {
+    try {
+        const data: UserNim[]  = await prisma.user.findMany({
+            select: {
+                student_id: true
+            }
+        })
+    successRes(res, 200, { data }, "getting nim successful");
     } catch (e: any) {
         console.error("Error in :", e);
         errorRes(res, 500, "Error ", e.message);
