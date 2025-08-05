@@ -15,18 +15,17 @@ model Admin {
   status     Boolean  @default(false) 
   created_at DateTime @default(now())
   updated_at DateTime @default(now())
-  
+
   role       Role @default(pending)
+  approved_loan_items LoanItem[] @relation("AdminApprovedLoanItems")
 }
 
 model User {
   id            Int             @id @default(autoincrement())
-  name          String          @unique
+  name          String         
   student_id    String         @unique
   major_name    String
-  academic_year String
   phone_number  String
-  organization  String
   created_at    DateTime        @default(now())
   updated_at    DateTime        @default(now())
   
@@ -40,6 +39,7 @@ model Item {
   description        String?
   quantity           Int              @default(1)
   borrowed_quantity  Int              @default(0)
+  stock              Int              @default(0)
   brand              String?
   imgUrl             String?
   pair_id            Int?
@@ -69,10 +69,12 @@ model Loan {
 }
 
 model LoanItem {
-  id               Int         @id @default(autoincrement())
+  id               Int          @id @default(autoincrement())
   loan_id          Int
   item_id          Int
-  borrowed_quantity Int       @default(1)
+  borrowed_quantity Int         @default(0)
+  approved_by_id   Int?
+  approved_by      Admin?       @relation("AdminApprovedLoanItems", fields: [approved_by_id], references: [id], onDelete: SetNull)
 
   loan              Loan        @relation(fields: [loan_id], references: [id], onDelete: Cascade)
   item              Item        @relation(fields: [item_id], references: [id], onDelete: Restrict)
