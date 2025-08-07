@@ -4,7 +4,7 @@ import { LoanItemModel } from "./item.model";
 export interface UserModel {
   id: number;
   name: string;
-  student_id: string;
+  identity_number: string;
   major_name: string;
   phone_number: string;
   created_at: Date;
@@ -16,19 +16,18 @@ export interface UserModel {
 
 export interface PostUserModel {
   name: string;
-  student_id: string;
+  identity_number: string;
   major_name: string;
   phone_number: string;
 }
 
 export interface UpdateUserModel {
   name?: string;
-  student_id?: string;
+  identity_number?: string;
   major_name?: string;
   phone_number?: string;
 }
 
-// user.model.ts
-export type UserNim = {
-    student_id: string;
+export type UserIdentity = {
+    identity_number: string;
 }

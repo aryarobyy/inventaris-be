@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { addLoan, deleteLoan, getLoanById, getLoanByStatus, getLoans, returnLoan, updateLoan } from "../controller/loan.controller";
+import { addLoan, deleteLoan, getLoanById, getLoanByStatus, getLoans, getLoansWithFilters, returnLoan, updateLoan } from "../controller/loan.controller";
 
 const router = Router();
 
@@ -10,5 +10,6 @@ router.get("/:id", getLoanById);
 router.get("/status/:status", getLoanByStatus);
 router.put("/:id", updateLoan);
 router.delete("/:id", deleteLoan);
+router.get('/filter', getLoansWithFilters)
 
 export default router;

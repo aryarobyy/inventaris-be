@@ -28,7 +28,7 @@ export interface ItemModel {
   created_at: Date;
   updated_at: Date;
 
-  loan_items: LoanItemModel[] | [];
+  // loan_items: LoanItemModel[] | [];
   category: ItemCategory;
   condition_status: ItemCondition;
   availability_status: ItemAvailability;

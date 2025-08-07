@@ -1,7 +1,7 @@
 import { NextFunction, Request, Response } from "express";
 import { errorRes, successRes } from "../utils/response";
 import prisma from "../prisma/prisma";
-import { PostUserModel, UpdateUserModel, UserModel, UserNim } from "../models/user.model";
+import { PostUserModel, UpdateUserModel, UserModel, UserIdentity } from "../models/user.model";
 
 export const getUsers = async (
     req: Request,
@@ -23,31 +23,32 @@ export const addUser = async (
     next: NextFunction
 ): Promise<void> =>{
     try{
-        const { name, student_id, major_name, phone_number, organization } = req.body;
-        if (!name || !student_id || !major_name || !phone_number || !organization) {
-            errorRes(res, 404, "All fields are required");
+        const { name, identity_number, major_name, phone_number } = req.body;
+        console.log("Adding user with data:", req.body);
+        if (!name || !identity_number || !major_name || !phone_number) {
+            errorRes(res, 400, "All fields are required");
             return
         }
         
         const existingUser = await prisma.user.findUnique({
-            where: { student_id }
+            where: { identity_number }
         });
 
         if(existingUser) {
-            errorRes(res, 404, "User with this student ID already exists");
+            errorRes(res, 409, "User with this student ID already exists");
             return;
         }
 
         const data: PostUserModel = await prisma.user.create({
             data: {
                 name,
-                student_id,
+                identity_number,
                 major_name,
                 phone_number,
             }
         });
 
-        successRes(res, 201, { data }, "post user successful");
+        successRes(res, 200, { data }, "post user successful");
     } catch (e: any) {
         console.error("Error in :", e);
         errorRes(res, 500, "Error ", e.message);
@@ -66,7 +67,7 @@ export const getUserById = async (
             select: {
                 id: true,
                 name: true,
-                student_id: true,
+                identity_number: true,
                 major_name: true,
                 phone_number: true,
                 created_at: true,
@@ -91,13 +92,13 @@ export const updateUser = async (
 ): Promise<void> =>{
     try{
         const { id }= req.params;
-        const { name, student_id, major_name, phone_number, organization } = req.body;
+        const { name, identity_number, major_name, phone_number } = req.body;
 
         const data: UpdateUserModel = await prisma.user.update({
             where: { id: Number(id) },
             data: {
                 name,
-                student_id,
+                identity_number,
                 major_name,
                 phone_number,
             }
@@ -110,7 +111,7 @@ export const updateUser = async (
     }
 }
 
-export const getUserByNim = async (
+export const getUserByIdentity = async (
     req: Request,
     res: Response,
     next: NextFunction
@@ -123,16 +124,7 @@ export const getUserByNim = async (
         }
         
         const data = await prisma.user.findUnique({
-            where: { student_id: nim },
-            select: {
-                id: true,
-                name: true,
-                student_id: true,
-                major_name: true,
-                phone_number: true,
-                created_at: true,
-                updated_at: true
-            }
+            where: { identity_number: nim },
         });
 
         if (!data) {
@@ -147,15 +139,15 @@ export const getUserByNim = async (
     }
 }
 
-export const getNims = async (
+export const getIdentities = async (
     req: Request,
     res: Response,
     next: NextFunction
 ): Promise<void> => {
     try {
-        const data: UserNim[]  = await prisma.user.findMany({
+        const data: UserIdentity[]  = await prisma.user.findMany({
             select: {
-                student_id: true
+                identity_number: true
             }
         })
     successRes(res, 200, { data }, "getting nim successful");
